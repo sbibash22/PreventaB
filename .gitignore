@@ -1,0 +1,116 @@
+# =========================
+# Django / Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.ruff_cache/
+coverage.xml
+.coverage
+htmlcov/
+pip-wheel-metadata/
+dist/
+build/
+*.egg-info/
+.eggs/
+pip-log.txt
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+pythonenv*/
+.conda/
+.condarc
+
+# Django
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+instance/
+staticfiles/
+static_root/
+media/
+uploads/
+
+# Django migrations (KEEP them if you use migrations!)
+# If you want to ignore, uncomment the next line (not recommended):
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Logs
+*.log
+logs/
+log/
+
+# =========================
+# Secrets / Environment
+# =========================
+.env
+.env.*
+!.env.example
+secrets.json
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+# =========================
+# OS / Editor / IDE
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# JetBrains
+.idea/
+
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+# =========================
+# Node / Frontend (if any)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# =========================
+# Windows / PowerShell
+# =========================
+*.lnk
+*.tmp
+*.bak
+
+# =========================
+# Jupyter / Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Optional: local dev artifacts
+# =========================
+.cache/
+tmp/
+temp/
