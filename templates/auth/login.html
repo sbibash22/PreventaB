@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  {% include "partials/head.html" %}
+  <title>Login - PreventaB</title>
+</head>
+
+<body class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+  {% include "partials/auth_navbar.html" %}
+
+  <!-- Page content -->
+  <main class="flex-1 flex items-center justify-center px-4 py-10">
+    <div class="w-full max-w-md">
+      <div class="p-6 rounded-2xl shadow bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <h1 class="text-2xl font-bold mb-1">Login</h1>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-6">Sign in to continue</p>
+
+        {% if messages %}
+          <div class="mb-4 space-y-2">
+            {% for m in messages %}
+              <div class="px-4 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                {{ m }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+          {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+          {% endif %}
+
+          <div>
+            <label class="block text-sm font-medium text-slate-800 dark:text-slate-200 mb-1">Username or Email</label>
+            {{ form.username }}
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-800 dark:text-slate-200 mb-1">Password</label>
+            <div class="relative">
+              {{ form.password }}
+              <button type="button"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs rounded-md
+                             bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:opacity-90 transition"
+                      onclick="togglePassword('id_password', this)">
+                Show
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-sm">
+            <a href="{% url 'password_reset_request' %}" class="text-blue-600 dark:text-blue-300 hover:underline">
+              Forgot password?
+            </a>
+          </div>
+
+          <button class="w-full py-2.5 rounded-lg bg-blue-600 text-white hover:opacity-90 transition font-semibold">
+            Login
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-4 text-center text-xs text-slate-600 dark:text-slate-400">
+        Having trouble? Use the reset password link below.
+      </div>
+    </div>
+  </main>
+
+  {% include "partials/auth_footer.html" %}
+
+  <script>
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      btn.textContent = isHidden ? "Hide" : "Show";
+    }
+  </script>
+</body>
+</html>

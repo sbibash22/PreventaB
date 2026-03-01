@@ -1,0 +1,33 @@
+{% extends "admin/base_admin.html" %}
+{% block content %}
+<div class="p-4 rounded-xl bg-white dark:bg-slate-900 border overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left">
+        <th class="py-2">Time</th>
+        <th>Device</th>
+        <th>Risk</th>
+        <th>Subject</th>
+        <th>Status</th>
+        <th class="text-right"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alerts %}
+      <tr class="border-t border-slate-200 dark:border-slate-800">
+        <td class="py-2">{{ a.created_at }}</td>
+        <td>{{ a.device.name }}</td>
+        <td><b>{{ a.risk_level }}</b></td>
+        <td>{{ a.subject|truncatechars:60 }}</td>
+        <td>{{ a.status }}</td>
+        <td class="text-right">
+          <a class="underline" href="{% url 'ack_alert_admin' a.pk %}">Ack</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td class="py-3 opacity-70" colspan="6">No alerts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

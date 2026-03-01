@@ -1,0 +1,159 @@
+{% extends "admin/base_admin.html" %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pb-10">
+  <!-- Header -->
+  <div class="p-5 sm:p-7 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+    <div class="flex flex-col gap-3">
+      <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
+        About PreventaB
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+        <b>PreventaB</b> is an explainable AI monitoring and alert platform that collects
+        <b>CPU, RAM and Disk telemetry</b> and <b>Windows event logs</b> to predict computer system failures
+        before they happen. It shows risk as <b>LOW / MEDIUM / HIGH</b> and explains <b>why</b> the risk increased
+        using simple English insights, helping administrators take preventive action and reduce downtime.
+      </p>
+
+      <!-- Quick badges -->
+      <div class="flex flex-wrap gap-2 mt-2">
+        <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+          Explainable AI (XAI)
+        </span>
+        <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+          Telemetry + Event Logs
+        </span>
+        <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+          Risk Alerts + Email
+        </span>
+        <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+          Django + PostgreSQL
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Profile + Aim -->
+  <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Project profile -->
+    <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Project Profile</h2>
+      <div class="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+        <div><span class="font-semibold">Course:</span> BSc (Hons) Computing (2025/26)</div>
+        <div><span class="font-semibold">Module:</span> Level 6 Production Project</div>
+        <div><span class="font-semibold">Title:</span> PreventaB: Explainable AI for Computer System Failure Prediction and Prevention</div>
+        <div><span class="font-semibold">Student:</span> Bibash Shrestha</div>
+        <div><span class="font-semibold">Student ID:</span> 77466887</div>
+      </div>
+    </div>
+
+    <!-- Aim -->
+    <div class="lg:col-span-2 p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Aim</h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+        The aim of PreventaB is to research, design, and develop an <b>explainable AI system</b> that analyses
+        computer performance metrics and event logs to <b>predict failures early</b>, generate <b>human-readable
+        explanations</b>, and send <b>early alerts</b>. This helps administrators take preventive steps to minimize
+        downtime and enhance reliability.
+      </p>
+    </div>
+  </div>
+
+  <!-- What it does + How it works -->
+  <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">What PreventaB does</h2>
+      <ul class="mt-3 space-y-2 text-sm sm:text-base text-slate-700 dark:text-slate-300 list-disc ml-5">
+        <li>Records CPU, RAM and Disk usage (telemetry)</li>
+        <li>Reads Windows event logs (critical, error, warning, info)</li>
+        <li>Stores collected data safely in PostgreSQL</li>
+        <li>Shows dashboards with charts, logs and risk score</li>
+        <li>Sends alerts via in-app notifications and email</li>
+        <li>Explains risk reasons using XAI methods (SHAP / LIME)</li>
+      </ul>
+    </div>
+
+    <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">How it works (simple flow)</h2>
+
+      <div class="mt-4 space-y-3 text-sm sm:text-base">
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+          <b>1) Collect:</b> Agent/collector reads telemetry + logs from Windows device
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+          <b>2) Store:</b> Data is saved into PostgreSQL database (structured records)
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+          <b>3) Predict:</b> Model generates risk score & risk label (LOW/MEDIUM/HIGH)
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+          <b>4) Explain:</b> SHAP/LIME highlights key metrics/log patterns causing risk
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+          <b>5) Alert:</b> System notifies admin/users via dashboard + email (if enabled)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key objectives (compact) -->
+  <div class="mt-6 p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Key objectives</h2>
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm sm:text-base text-slate-700 dark:text-slate-300">
+      <ul class="list-disc ml-5 space-y-1">
+        <li>Build data pipeline for metrics + error logs → database</li>
+        <li>Clean, parse and feature-engineer dataset for training</li>
+        <li>Train baseline models and advanced models for prediction</li>
+        <li>Use SHAP/LIME for explainable insights in simple English</li>
+      </ul>
+      <ul class="list-disc ml-5 space-y-1">
+        <li>Visualize trends & risk score with dashboard charts</li>
+        <li>Send alerts for high risk with cooldown control</li>
+        <li>Evaluate models using precision, recall, F1, ROC-AUC</li>
+        <li>Document results for future tuning and evaluation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Tech stack</h2>
+      <ul class="mt-3 text-sm sm:text-base text-slate-700 dark:text-slate-300 space-y-1 list-disc ml-5">
+        <li>Django (web app + authentication)</li>
+        <li>PostgreSQL (data storage)</li>
+        <li>Python / Jupyter (ML training & evaluation)</li>
+        <li>Chart.js (dashboard visualization)</li>
+        <li>SHAP / LIME (explainable AI)</li>
+      </ul>
+    </div>
+
+    <div class="lg:col-span-2 p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Why PreventaB</h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+        PreventaB focuses on reducing failures and downtime by turning raw telemetry and log patterns into
+        actionable risk insights. By pairing prediction with explainability, it helps users understand
+        <b>what happened</b>, <b>why it happened</b>, and <b>what to do next</b> (prevention actions).
+      </p>
+
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+          <div class="font-semibold text-slate-900 dark:text-slate-100">Admin benefits</div>
+          <p class="text-sm text-slate-700 dark:text-slate-300 mt-1">
+            Central control, device monitoring, risk thresholds, alerts, and audit logs.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+          <div class="font-semibold text-slate-900 dark:text-slate-100">User benefits</div>
+          <p class="text-sm text-slate-700 dark:text-slate-300 mt-1">
+            Personal device monitoring, clear charts, risk insights, and notifications.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

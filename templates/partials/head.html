@@ -1,0 +1,73 @@
+{% load static %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Favicon (optional - uses your logo) -->
+<link rel="icon" type="image/png" href="{% static 'images/Logo.png' %}">
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        boxShadow: {
+          soft: '0 10px 30px rgba(0,0,0,0.08)',
+        },
+      }
+    }
+  }
+</script>
+
+<!-- Global UI polish -->
+<style>
+  /* Smooth theme transition */
+  html, body {
+    transition: background-color .2s ease, color .2s ease;
+  }
+
+  /* Better font rendering */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Nice focus ring for accessibility */
+  :focus-visible {
+    outline: 2px solid rgba(59,130,246,.6);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* Make Django error lists look clean */
+  ul.errorlist {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    color: #dc2626; /* red-600 */
+    font-size: 0.875rem;
+  }
+  .dark ul.errorlist {
+    color: #fca5a5; /* red-300 */
+  }
+  ul.errorlist li {
+    margin: 0;
+  }
+
+  /* Make Django form <p> spacing reasonable if used anywhere */
+  form p {
+    margin: 0 0 12px;
+  }
+</style>
+
+<!-- Alpine.js (sidebar toggle, UI state) -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<!-- Charts (risk analytics graphs) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Theme toggle JS -->
+<script src="{% static 'js/theme.js' %}"></script>
+
+{% block extra_head %}{% endblock %}

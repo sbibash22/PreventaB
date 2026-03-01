@@ -1,0 +1,114 @@
+<nav class="space-y-1 text-sm">
+  {% with p=request.path %}
+
+  <!-- Dashboard -->
+  <a href="{% url 'admin_dashboard' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/admin/dashboard' in p or p == '/admin/' %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Dashboard' : ''">
+    <span class="text-lg">🏠</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Dashboard</span>
+  </a>
+
+  <!-- Device Management -->
+  <a href="{% url 'device_list' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/devices/admin' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Device Management' : ''">
+    <span class="text-lg">💻</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Device Management</span>
+  </a>
+
+  <!-- Logs -->
+  <a href="{% url 'logs_view' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/telemetry/logs' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Logs' : ''">
+    <span class="text-lg">📄</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Logs</span>
+  </a>
+
+  <!-- User Management -->
+  <a href="{% url 'user_list' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/accounts/admin/users' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'User Management' : ''">
+    <span class="text-lg">👥</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>User Management</span>
+  </a>
+
+  <!-- Notifications (badge stays visible) -->
+  <a href="{% url 'notifications_list' %}"
+     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/notifications' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Notifications' : ''">
+    <div class="flex items-center gap-3" :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''">
+      <span class="text-lg">🔔</span>
+      <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Notifications</span>
+    </div>
+
+    {% if unread_notifications %}
+      <span class="text-xs px-2 py-0.5 rounded-full bg-red-600 text-white"
+            :class="(sidebarMini && window.innerWidth>=768) ? 'ml-0' : ''">
+        {{ unread_notifications }}
+      </span>
+    {% endif %}
+  </a>
+
+  <!-- Send Alert -->
+  <a href="{% url 'send_alert' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/admin/send' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Send Alert' : ''">
+    <span class="text-lg">📣</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Send Alert</span>
+  </a>
+
+  <!-- Alert History -->
+  <a href="{% url 'alert_history' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/admin/history' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Alert History' : ''">
+    <span class="text-lg">🕘</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Alert History</span>
+  </a>
+
+  <!-- System Settings -->
+  <a href="{% url 'system_settings' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/admin/system-settings' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'System Settings' : ''">
+    <span class="text-lg">🛠️</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>System Settings</span>
+  </a>
+
+  <!-- Alert Settings -->
+  <a href="{% url 'alert_settings' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/admin/alert-settings' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Alert Settings' : ''">
+    <span class="text-lg">⚙️</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Alert Settings</span>
+  </a>
+
+  <!-- Risk Analytics -->
+  <a href="{% url 'risk_analytics' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/telemetry/admin/risk' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Risk Analytics / AI Insights' : ''">
+    <span class="text-lg">📊</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Risk Analytics / AI Insights</span>
+  </a>
+
+  {% endwith %}
+</nav>

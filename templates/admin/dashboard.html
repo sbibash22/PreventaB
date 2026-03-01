@@ -1,0 +1,182 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+{% block content %}
+
+<!-- Stat cards -->
+<div class="grid md:grid-cols-4 gap-4">
+
+  <!-- Devices -> Device Management -->
+  <a href="{% url 'device_list' %}"
+     class="block p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+            hover:opacity-95 hover:shadow transition">
+    <div class="text-sm opacity-70">Devices</div>
+    <div class="text-2xl font-bold">{{ devices_count }}</div>
+    <div class="text-xs mt-1 text-slate-600 dark:text-slate-400">View all devices</div>
+  </a>
+
+  <!-- Users -> User Management -->
+  <a href="{% url 'user_list' %}"
+     class="block p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+            hover:opacity-95 hover:shadow transition">
+    <div class="text-sm opacity-70">Users</div>
+    <div class="text-2xl font-bold">{{ users_count }}</div>
+    <div class="text-xs mt-1 text-slate-600 dark:text-slate-400">Manage accounts</div>
+  </a>
+
+  <!-- Logs -> Logs page -->
+  <a href="{% url 'logs_view' %}"
+     class="block p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+            hover:opacity-95 hover:shadow transition">
+    <div class="text-sm opacity-70">Logs (24h)</div>
+    <div class="text-2xl font-bold">{{ logs_24h }}</div>
+    <div class="text-xs mt-1 text-slate-600 dark:text-slate-400">View system logs</div>
+  </a>
+
+  <!-- Open Alerts -> Alert History -->
+  <a href="{% url 'alert_history' %}"
+     class="block p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+            hover:opacity-95 hover:shadow transition">
+    <div class="text-sm opacity-70">Open Alerts</div>
+    <div class="text-2xl font-bold">{{ open_alerts }}</div>
+    <div class="text-xs mt-1 text-slate-600 dark:text-slate-400">View alerts</div>
+  </a>
+
+</div>
+
+<!-- Charts panel -->
+<div class="mt-6 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+  <div class="flex items-center justify-between gap-3 flex-wrap">
+    <div>
+      <h2 class="font-semibold">Device Performance (CPU / RAM / Disk)</h2>
+      <p class="text-sm text-slate-600 dark:text-slate-400">Recent samples collected</p>
+    </div>
+
+    <form method="get" class="flex items-center gap-2">
+      <label class="text-sm opacity-80">Device:</label>
+      <select name="device"
+              class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950">
+        {% for d in devices %}
+          <option value="{{ d.id }}" {% if selected_device and d.id == selected_device.id %}selected{% endif %}>
+            {{ d.name }}
+          </option>
+        {% endfor %}
+      </select>
+      <button class="px-3 py-2 rounded-lg bg-blue-600 text-white hover:opacity-90 transition">View</button>
+    </form>
+  </div>
+
+  {% if selected_device %}
+    <div class="mt-4 grid lg:grid-cols-3 gap-4">
+      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm opacity-70 mb-2">CPU Usage (%)</div>
+        <div class="h-44"><canvas id="cpuChart" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm opacity-70 mb-2">RAM Usage (%)</div>
+        <div class="h-44"><canvas id="ramChart" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm opacity-70 mb-2">Disk Usage (%)</div>
+        <div class="h-44"><canvas id="diskChart" class="w-full h-full"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ✅ safest way to pass JSON to JS -->
+    {{ chart_payload|json_script:"dash-chart-data" }}
+
+    <!-- ✅ your own JS that renders charts -->
+    <script src="{% static 'js/charts.js' %}"></script>
+
+  {% else %}
+    <div class="mt-4 opacity-70">No devices found. Add a device and run the collector.</div>
+  {% endif %}
+</div>
+
+<!-- ✅ Explainable AI report -->
+{% if selected_device and xai_report %}
+<div class="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+  <div class="flex items-start justify-between gap-3 flex-wrap">
+    <div>
+      <h3 class="font-semibold text-slate-900 dark:text-slate-100">Explainable AI Report</h3>
+      <p class="text-sm text-slate-700 dark:text-slate-300 mt-1">{{ xai_report.summary }}</p>
+    </div>
+
+    <div class="text-sm text-slate-700 dark:text-slate-300">
+      <span class="font-semibold">Latest:</span>
+      CPU {{ xai_report.latest.cpu|floatformat:1 }}% ·
+      RAM {{ xai_report.latest.ram|floatformat:1 }}% ·
+      Disk {{ xai_report.latest.disk|floatformat:1 }}%
+    </div>
+  </div>
+
+  <div class="mt-3 text-slate-900 dark:text-slate-100 font-medium">
+    {{ xai_report.headline }}
+  </div>
+
+  <div class="mt-3 grid md:grid-cols-2 gap-4">
+    <div>
+      <div class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">What we observed</div>
+      <ul class="list-disc ml-5 text-sm text-slate-700 dark:text-slate-300 space-y-1">
+        {% for b in xai_report.bullets %}
+          <li>{{ b|safe }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div>
+      <div class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">Recommended actions</div>
+      <ul class="list-disc ml-5 text-sm text-slate-700 dark:text-slate-300 space-y-1">
+        {% for a in xai_report.actions %}
+          <li>{{ a }}</li>
+        {% endfor %}
+      </ul>
+
+      <div class="mt-3 text-xs text-slate-600 dark:text-slate-400">
+        Log signals: {{ xai_report.log_stats.errors }} error(s), {{ xai_report.log_stats.warnings }} warning(s).
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Recent panels -->
+<div class="mt-6 grid lg:grid-cols-2 gap-6">
+  <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+    <div class="flex items-center justify-between">
+      <h2 class="font-semibold">Recent Telemetry</h2>
+      <a class="text-sm underline opacity-80" href="{% url 'risk_analytics' %}">View AI</a>
+    </div>
+    <div class="text-sm mt-3 space-y-2">
+      {% for s in recent_samples %}
+        <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+          <span>{{ s.device.name }}</span>
+          <span class="font-semibold">{{ s.risk_level }} ({{ s.risk_score|floatformat:2 }})</span>
+        </div>
+      {% empty %}
+        <div class="opacity-70">No telemetry yet. Run collector to start collecting.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+    <div class="flex items-center justify-between">
+      <h2 class="font-semibold">Recent Logs</h2>
+      <a class="text-sm underline opacity-80" href="{% url 'logs_view' %}">View Logs</a>
+    </div>
+    <div class="text-sm mt-3 space-y-2">
+      {% for l in recent_logs %}
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-2">
+          <span class="font-semibold">[{{ l.level }}]</span>
+          <span class="opacity-80">{{ l.device.name }}</span> —
+          <span>{{ l.message|truncatechars:100 }}</span>
+        </div>
+      {% empty %}
+        <div class="opacity-70">No logs yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

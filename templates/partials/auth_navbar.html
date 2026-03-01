@@ -1,0 +1,30 @@
+{% load static %}
+
+<nav class="w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <!-- Logo -->
+      <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center">
+        <img
+          src="{% static 'images/Logo.png' %}"
+          alt="PreventaB Logo"
+          class="w-full h-full object-contain p-1"
+        />
+      </div>
+
+      <!-- Brand text -->
+      <div class="leading-tight">
+        <div class="font-bold text-slate-900 dark:text-slate-100">PreventaB</div>
+        <div class="text-xs text-slate-600 dark:text-slate-400">Smart Risk Monitoring & Alerts</div>
+      </div>
+    </a>
+
+    <div class="flex items-center gap-2">
+      <button onclick="toggleTheme()"
+              class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+                     text-slate-800 dark:text-slate-200 hover:opacity-90 transition">
+        🌗 Theme
+      </button>
+    </div>
+  </div>
+</nav>

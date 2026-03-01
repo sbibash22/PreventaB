@@ -1,0 +1,130 @@
+{% extends "user/base_user.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+  <!-- Page header -->
+  <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Settings</h1>
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+      Manage your preferences. Use the <span class="font-semibold">Theme</span> button (top‑right) for Dark/Light mode.
+    </p>
+  </div>
+
+  <!-- Preferences -->
+  <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Preferences</h2>
+
+    <form method="post" class="mt-4 space-y-6">
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Default device (optional)
+          </label>
+          {{ pref_form.default_device }}
+          {% if pref_form.default_device.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ pref_form.default_device.errors|striptags }}</p>
+          {% endif %}
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Used as the default selection on your dashboard charts.
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Timezone
+          </label>
+          {{ pref_form.timezone }}
+          {% if pref_form.timezone.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ pref_form.timezone.errors|striptags }}</p>
+          {% endif %}
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Example: <span class="font-mono">UTC</span>, <span class="font-mono">Australia/Sydney</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Notifications</h3>
+
+        <div class="space-y-3">
+          <label class="flex items-center gap-3">
+            {{ pref_form.inapp_notifications }}
+            <span class="text-sm text-slate-700 dark:text-slate-200">Enable in‑app notifications</span>
+          </label>
+
+          <label class="flex items-center gap-3">
+            {{ pref_form.email_notifications }}
+            <span class="text-sm text-slate-700 dark:text-slate-200">Enable email notifications</span>
+          </label>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <label class="flex items-center gap-3">
+              {{ pref_form.notify_on_medium }}
+              <span class="text-sm text-slate-700 dark:text-slate-200">Notify me on <b>MEDIUM</b> risk</span>
+            </label>
+
+            <label class="flex items-center gap-3">
+              {{ pref_form.notify_on_high }}
+              <span class="text-sm text-slate-700 dark:text-slate-200">Notify me on <b>HIGH</b> risk</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Interface</h3>
+
+        <label class="flex items-center gap-3">
+          {{ pref_form.compact_sidebar }}
+          <span class="text-sm text-slate-700 dark:text-slate-200">Compact sidebar</span>
+        </label>
+      </div>
+
+      <div class="pt-2">
+        <button type="submit" name="pref-submit"
+                class="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow">
+          Save preferences
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Security -->
+  <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Security</h2>
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Change your password.</p>
+
+    <form method="post" class="mt-4 space-y-4">
+      {% csrf_token %}
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">New password</label>
+        {{ pwd_form.new_password1 }}
+        {% if pwd_form.new_password1.errors %}
+          <p class="text-sm text-red-600 mt-1">{{ pwd_form.new_password1.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Confirm new password</label>
+        {{ pwd_form.new_password2 }}
+        {% if pwd_form.new_password2.errors %}
+          <p class="text-sm text-red-600 mt-1">{{ pwd_form.new_password2.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      {% if pwd_form.non_field_errors %}
+        <p class="text-sm text-red-600">{{ pwd_form.non_field_errors|striptags }}</p>
+      {% endif %}
+
+      <button type="submit" name="pwd-submit"
+              class="inline-flex items-center px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold shadow">
+        Update password
+      </button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

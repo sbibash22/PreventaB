@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block content %}
+<div class="flex justify-end mb-3">
+  <a class="px-3 py-2 rounded-lg bg-blue-600 text-white hover:opacity-90 transition"
+     href="{% url 'device_add' %}">
+    + Add Device
+  </a>
+</div>
+
+<div class="p-4 rounded-xl bg-white dark:bg-slate-900 border overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left">
+        <th class="py-2">Name</th>
+        <th>IP</th>
+        <th>OS</th>
+        <th>Status</th>
+        <th>Last Seen</th>
+        <th class="text-right"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in devices %}
+      <tr class="border-t border-slate-200 dark:border-slate-800">
+        <td class="py-2 font-semibold">{{ d.name }}</td>
+        <td>{{ d.ip_address }}</td>
+        <td>{{ d.os_type }}</td>
+        <td>
+          {% if d.is_online %}
+            <span class="px-2 py-1 rounded-full text-xs bg-green-600 text-white">Online</span>
+          {% else %}
+            <span class="px-2 py-1 rounded-full text-xs bg-slate-400 text-white">Offline</span>
+          {% endif %}
+        </td>
+        <td class="opacity-80">{{ d.last_seen|default:"-" }}</td>
+        <td class="text-right">
+          <a class="underline" href="{% url 'device_detail' d.pk %}">Open</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td class="py-3 opacity-70" colspan="6">No devices yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

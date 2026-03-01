@@ -1,0 +1,63 @@
+<nav class="space-y-1 text-sm">
+  {% with p=request.path %}
+
+  <!-- Dashboard -->
+  <a href="{% url 'user_dashboard' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/user/dashboard' in p or p == '/user/' %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Dashboard' : ''">
+    <span class="text-lg">🏠</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Dashboard</span>
+  </a>
+
+  <!-- Logs -->
+  <a href="{% url 'logs_view' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/telemetry/logs' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Logs' : ''">
+    <span class="text-lg">📄</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Logs</span>
+  </a>
+
+  <!-- Settings -->
+  <a href="{% url 'user_settings' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/user/settings' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Settings' : ''">
+    <span class="text-lg">⚙️</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Settings</span>
+  </a>
+
+  <!-- Notifications -->
+  <a href="{% url 'notifications_list' %}"
+     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/notifications' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Notifications' : ''">
+    <div class="flex items-center gap-3" :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''">
+      <span class="text-lg">🔔</span>
+      <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Notifications</span>
+    </div>
+
+    {% if unread_notifications %}
+      <span class="text-xs px-2 py-0.5 rounded-full bg-red-600 text-white">
+        {{ unread_notifications }}
+      </span>
+    {% endif %}
+  </a>
+
+  <!-- Alerts -->
+  <a href="{% url 'user_alerts' %}"
+     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+            {% if '/alerts/user' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+     :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+     :title="(sidebarMini && window.innerWidth>=768) ? 'Alerts' : ''">
+    <span class="text-lg">🚨</span>
+    <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Alerts</span>
+  </a>
+
+  {% endwith %}
+</nav>

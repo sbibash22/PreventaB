@@ -1,0 +1,12 @@
+{% extends "admin/base_admin.html" %}
+{% block content %}
+<div class="p-5 rounded-xl bg-white dark:bg-slate-900 border max-w-xl">
+  <h2 class="font-semibold text-lg mb-2">Confirm Delete</h2>
+  <p class="mb-4">Are you sure you want to delete: <b>{{ object }}</b> ?</p>
+  <form method="post" class="flex gap-2">
+    {% csrf_token %}
+    <button class="px-4 py-2 rounded-lg bg-red-600 text-white">Yes, delete</button>
+    <a class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800" href="{% url back_url %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

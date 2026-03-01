@@ -1,0 +1,29 @@
+{% extends "user/base_user.html" %}
+{% block content %}
+<div class="p-4 rounded-xl bg-white dark:bg-slate-900 border overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left">
+        <th class="py-2">Time</th>
+        <th>Device</th>
+        <th>Level</th>
+        <th>Source</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in logs %}
+      <tr class="border-t border-slate-200 dark:border-slate-800">
+        <td class="py-2">{{ l.timestamp }}</td>
+        <td>{{ l.device.name }}</td>
+        <td><b>{{ l.level }}</b></td>
+        <td class="opacity-80">{{ l.source }}</td>
+        <td>{{ l.message|truncatechars:160 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td class="py-3 opacity-70" colspan="5">No logs yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
