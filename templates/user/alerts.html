@@ -3,7 +3,7 @@
 <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border">
   {% for a in alerts %}
     <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 mb-2">
-      <div class="flex justify-between items-center">
+      <div class="flex flex-wrap items-start justify-between gap-2">
         <div class="font-bold">[{{ a.risk_level }}] {{ a.subject }}</div>
         <div class="text-xs opacity-70">{{ a.created_at }}</div>
       </div>

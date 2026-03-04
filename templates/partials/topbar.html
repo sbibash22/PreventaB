@@ -1,12 +1,12 @@
 {% load static %}
-<header class="flex items-center justify-between gap-3">
-  <div class="flex items-center gap-3">
+<header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex items-center gap-3 min-w-0">
     <!-- Toggle button -->
     <button
       type="button"
       class="inline-flex items-center justify-center w-10 h-10 rounded-lg
              bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800
-             hover:opacity-90 transition"
+             hover:opacity-90 transition shrink-0"
       @click="
         if (window.innerWidth < 768) { sidebarOpen = !sidebarOpen; }
         else { sidebarMini = !sidebarMini; }
@@ -19,22 +19,24 @@
       </svg>
     </button>
 
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center shrink-0">
         <img src="{% static 'images/Logo.png' %}" alt="PreventaB" class="w-full h-full object-contain p-1" />
       </div>
-      <div class="leading-tight">
-        <div class="text-lg font-bold">PreventaB</div>
-        <div class="text-xs text-slate-600 dark:text-slate-400">{{ title }}</div>
+      <div class="leading-tight min-w-0">
+        <div class="text-lg font-bold truncate">PreventaB</div>
+        <div class="text-xs text-slate-600 dark:text-slate-400 truncate">{{ title }}</div>
       </div>
     </div>
   </div>
 
-  <div class="flex items-center gap-2">
+  <!-- Actions -->
+  <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
     <button onclick="toggleTheme()"
             class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800
                    text-slate-800 dark:text-slate-200 hover:opacity-90 transition">
-      🌗 Theme
+      <span class="sm:hidden">🌗</span>
+      <span class="hidden sm:inline">🌗 Theme</span>
     </button>
 
     <a href="{% url 'logout' %}"

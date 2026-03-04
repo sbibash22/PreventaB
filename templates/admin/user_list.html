@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% block content %}
-<div class="flex justify-between items-center mb-4">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
   <h2 class="text-lg font-semibold">Users</h2>
   <a class="px-3 py-2 rounded-lg bg-blue-600 text-white hover:opacity-90 transition" href="{% url 'user_add' %}">
     + Add User

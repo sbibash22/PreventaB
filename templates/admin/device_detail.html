@@ -1,6 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% block content %}
-<div class="p-5 rounded-xl bg-white dark:bg-slate-900 border">
+<div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border">
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div>
       <div class="text-2xl font-bold">{{ device.name }}</div>
@@ -27,7 +27,7 @@
     <h2 class="font-semibold mb-2">Latest Telemetry</h2>
     {% for s in samples %}
       <div class="border-b border-slate-200 dark:border-slate-800 py-2 text-sm">
-        <div class="flex justify-between">
+        <div class="flex flex-wrap sm:flex-nowrap justify-between gap-2">
           <span class="opacity-80">{{ s.timestamp }}</span>
           <span class="font-bold">{{ s.risk_level }} ({{ s.risk_score|floatformat:2 }})</span>
         </div>

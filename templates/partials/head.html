@@ -59,6 +59,29 @@
   form p {
     margin: 0 0 12px;
   }
+
+  /* Responsive media defaults */
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Prevent accidental horizontal scrolling on mobile */
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Better momentum scrolling for horizontal scroll areas (tables) on iOS */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Safe-area support (iOS notch) */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
 </style>
 
 <!-- Alpine.js (sidebar toggle, UI state) -->

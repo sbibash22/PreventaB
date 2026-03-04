@@ -1,12 +1,13 @@
 {% extends "admin/base_admin.html" %}
 {% block content %}
-<div class="p-5 rounded-xl bg-white dark:bg-slate-900 border">
-  <div class="flex items-center justify-between">
+<div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
     <h2 class="font-semibold">Risk Trend (Latest Samples)</h2>
     <span class="text-sm opacity-70">Uses ML if model.joblib exists</span>
   </div>
-  <div class="mt-3">
-    <canvas id="riskChart" height="90"></canvas>
+
+  <div class="mt-3 h-64 sm:h-72">
+    <canvas id="riskChart" class="w-full h-full"></canvas>
   </div>
 </div>
 
@@ -17,14 +18,21 @@ const data = [{% for s in samples %}{{ s.risk_score|floatformat:3 }},{% endfor %
 new Chart(document.getElementById('riskChart'), {
   type: 'line',
   data: { labels, datasets: [{ label: 'Risk Score', data }] },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    interaction: { mode: "nearest", intersect: false },
+    scales: { x: { ticks: { maxRotation: 20, minRotation: 0 } } }
+  }
 });
 </script>
 
-<div class="mt-6 p-4 rounded-xl bg-white dark:bg-slate-900 border text-sm">
+<div class="mt-6 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm">
   {% for s in samples %}
-    <div class="border-b border-slate-200 dark:border-slate-800 py-2">
-      <b>{{ s.device.name }}</b> — {{ s.timestamp }} —
-      <b>{{ s.risk_level }}</b> ({{ s.risk_score|floatformat:2 }})
+    <div class="border-b border-slate-200 dark:border-slate-800 py-2 flex flex-wrap sm:flex-nowrap justify-between gap-2">
+      <span class="font-semibold">{{ s.device.name }}</span>
+      <span><b>{{ s.risk_level }}</b> ({{ s.risk_score|floatformat:2 }}) • {{ s.timestamp }}</span>
     </div>
   {% empty %}
     <div class="opacity-70">No samples yet.</div>

@@ -4,7 +4,7 @@
   {% for n in notes %}
     <a href="{% url 'notification_read' n.pk %}"
        class="block p-3 rounded-xl border border-slate-200 dark:border-slate-800 mb-2 hover:opacity-90 transition">
-      <div class="flex justify-between">
+      <div class="flex flex-wrap items-start justify-between gap-2">
         <div class="font-semibold">{{ n.title }}</div>
         {% if n.is_unread %}<span class="text-xs px-2 py-0.5 rounded-full bg-red-600 text-white">New</span>{% endif %}
       </div>
