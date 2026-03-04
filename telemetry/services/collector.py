@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Optional
+import os
+import platform
 
 import psutil
 from django.utils import timezone
@@ -9,17 +10,20 @@ from django.utils import timezone
 from devices.models import Device
 from telemetry.models import SystemLog, TelemetrySample
 from telemetry.services.risk import predict_risk
-from telemetry.services.windows_logs import read_recent_events
+from telemetry.services.os_logs import read_recent_events
 from alerts.services.alerting import maybe_raise_risk_alert
 
 
 def _disk_percent() -> float:
-    # On Windows, psutil.disk_usage('/') works; keep it simple.
+    # Windows should use SystemDrive, others use "/"
+    if platform.system().lower() == "windows":
+        drive = os.getenv("SystemDrive", "C:") + "\\"
+        return float(psutil.disk_usage(drive).percent)
     return float(psutil.disk_usage("/").percent)
 
 
 def collect_and_store(device: Device, max_events: int = 30) -> TelemetrySample:
-    """Collect local system metrics + Windows logs and store them for a device."""
+    """Collect local system metrics + OS logs and store them for a device."""
 
     now = timezone.now()
 
@@ -33,7 +37,7 @@ def collect_and_store(device: Device, max_events: int = 30) -> TelemetrySample:
     ram = float(psutil.virtual_memory().percent)
     disk = _disk_percent()
 
-    # Windows logs (safe fallback to [])
+    # OS logs (Windows/Linux/macOS). Safe fallback to []
     events = read_recent_events(max_events=max_events, log_type="System")
 
     # Save logs (avoid duplicates in last hour by hash)

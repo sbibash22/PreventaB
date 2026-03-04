@@ -25,23 +25,30 @@ def _local_ip() -> str:
         return "127.0.0.1"
 
 
+def _detect_os_type() -> str:
+    sysname = platform.system().lower()
+    if sysname == "windows":
+        return Device.OSType.WINDOWS
+    if sysname == "linux":
+        return Device.OSType.LINUX
+    if sysname == "darwin":
+        return Device.OSType.MAC
+    return Device.OSType.LINUX
+
+
 class Command(BaseCommand):
-    help = "Collect local Windows metrics/logs and store them for demo purposes."
+    help = "Collect local CPU/RAM/Disk metrics and OS logs (Windows/Linux/macOS) and store them for demo/testing."
 
     def add_arguments(self, parser):
         parser.add_argument("--once", action="store_true", help="Collect only once and exit")
         parser.add_argument("--interval", type=int, default=0, help="Seconds between collections (overrides SystemSettings if >0)")
-        parser.add_argument("--events", type=int, default=30, help="Max Windows events to ingest per run")
+        parser.add_argument("--events", type=int, default=30, help="Max recent log events to ingest per run (OS-dependent)")
 
     def handle(self, *args, **options):
         # Device naming: prefer env, else computer name.
-        device_name = os.getenv("DEMO_DEVICE_NAME") or platform.node() or "Windows Device"
-
-        # If you want exactly: HP Envy x360
-        # set DEMO_DEVICE_NAME=HP Envy x360 in your .env
-
+        device_name = os.getenv("DEMO_DEVICE_NAME") or platform.node() or "Demo Device"
         ip = os.getenv("DEMO_DEVICE_IP") or _local_ip()
-        os_type = "WINDOWS"
+        os_type = _detect_os_type()
 
         device, created = Device.objects.get_or_create(
             name=device_name,
@@ -71,7 +78,8 @@ class Command(BaseCommand):
             device.assigned_users.add(admin_user)
 
         self.stdout.write(self.style.SUCCESS(f"Using device: {device.name} ({device.ip_address}) api_key={device.api_key[:8]}..."))
-        self.stdout.write(self.style.SUCCESS(f"Logged in Windows user: {getpass.getuser()}"))
+        self.stdout.write(self.style.SUCCESS(f"Logged in OS user: {getpass.getuser()}"))
+        self.stdout.write(self.style.SUCCESS(f"Detected OS: {platform.system()}"))
 
         # Interval
         interval = int(options.get("interval") or 0)

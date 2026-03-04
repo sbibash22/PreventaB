@@ -9,6 +9,7 @@ from .models import SystemLog, TelemetrySample
 from .services.risk import predict_risk
 from alerts.services.alerting import maybe_raise_risk_alert
 
+
 @csrf_exempt
 def ingest(request):
     if request.method != "POST":
@@ -39,11 +40,18 @@ def ingest(request):
     device.last_seen = now
     device.save(update_fields=["is_online", "last_seen"])
 
+    # Deduplicate by hash in last hour
+    one_hour_ago = now - timezone.timedelta(hours=1)
+    existing_hashes = set(
+        SystemLog.objects.filter(device=device, timestamp__gte=one_hour_ago)
+        .values_list("msg_hash", flat=True)
+    )
+
     # save logs
     for item in logs[:200]:
-        ts = item.get("timestamp")
+        ts = item.get("timestamp", "")
         try:
-            ts_dt = timezone.datetime.fromisoformat(ts.replace("Z",""))
+            ts_dt = timezone.datetime.fromisoformat(str(ts).replace("Z",""))
             if timezone.is_naive(ts_dt):
                 ts_dt = timezone.make_aware(ts_dt, timezone=timezone.utc)
         except Exception:
@@ -54,8 +62,9 @@ def ingest(request):
         lvl = (item.get("level") or "INFO").upper()
         event_id = str(item.get("event_id") or "")[:40]
 
-        raw = dict(item)
         h = hashlib.sha256((device.api_key + src + event_id + msg).encode("utf-8")).hexdigest()
+        if h in existing_hashes:
+            continue
 
         SystemLog.objects.create(
             device=device,
@@ -64,12 +73,12 @@ def ingest(request):
             source=src,
             event_id=event_id,
             message=msg,
-            raw_json=raw,
+            raw_json=dict(item),
             msg_hash=h
         )
+        existing_hashes.add(h)
 
     # compute last 1h log counts
-    one_hour_ago = now - timezone.timedelta(hours=1)
     recent = SystemLog.objects.filter(device=device, timestamp__gte=one_hour_ago)
     critical_count = recent.filter(level="CRITICAL").count()
     error_count = recent.filter(level="ERROR").count()
@@ -97,7 +106,6 @@ def ingest(request):
         explanation=explanation,
     )
 
-    # create alert if needed
     maybe_raise_risk_alert(device=device, risk_level=level, risk_score=score, sample=sample)
 
     return JsonResponse({"ok": True, "risk_level": level, "risk_score": score})
