@@ -62,7 +62,7 @@ def admin_dashboard(request):
     users_count = User.objects.count()
     open_alerts = Alert.objects.filter(status="OPEN").count()
 
-    # ✅ FIX: Logs(24h) counts correctly for timestamp OR created_at
+    #  FIX: Logs(24h) counts correctly for timestamp OR created_at
     since_24h = timezone.now() - timezone.timedelta(hours=24)
     time_field = _log_time_field()
     if time_field:
@@ -79,7 +79,7 @@ def admin_dashboard(request):
     device_id = request.GET.get("device")
     selected_device = Device.objects.filter(id=device_id).first() if device_id else devices.first()
 
-    # ✅ Always use Kathmandu for charts
+    #  Always use Kathmandu for charts
     kathmandu_tz = ZoneInfo("Asia/Kathmandu")
 
     timestamps, labels, cpu, ram, disk = [], [], [], [], []
@@ -96,12 +96,12 @@ def admin_dashboard(request):
         # explainable report
         xai_report = build_xai_report(qs, log_qs)
 
-        # ✅ chart arrays (Kathmandu time ISO)
+        #  chart arrays (Kathmandu time ISO)
         for s in qs:
             ts = getattr(s, "timestamp", None)
             if ts:
                 ts_local = timezone.localtime(ts, kathmandu_tz)
-                timestamps.append(ts_local.isoformat())  # ✅ correct Kathmandu time +05:45
+                timestamps.append(ts_local.isoformat())  #  correct Kathmandu time +05:45
                 labels.append(ts_local.strftime("%b %d, %I:%M %p").replace(" 0", " "))
             else:
                 timestamps.append("")
@@ -112,7 +112,7 @@ def admin_dashboard(request):
             disk.append(_sample_value(s, "disk", "disk_usage"))
 
     chart_payload = {
-        "timestamps": timestamps,  # ✅ use this in charts.js
+        "timestamps": timestamps,  #  use this in charts.js
         "labels": labels,          # fallback
         "cpu": cpu,
         "ram": ram,
@@ -141,7 +141,7 @@ def user_dashboard(request):
     """
     devices = request.user.devices.all().order_by("name")
 
-    # ✅ Always use Kathmandu for charts
+    #  Always use Kathmandu for charts
     kathmandu_tz = ZoneInfo("Asia/Kathmandu")
 
     if not devices.exists():
@@ -176,7 +176,7 @@ def user_dashboard(request):
         disk.append(_sample_value(s, "disk", "disk_usage"))
 
     chart_payload = {
-        "timestamps": timestamps,  # ✅ use this in charts_user.js
+        "timestamps": timestamps,  #  use this in charts_user.js
         "labels": labels,          # fallback
         "cpu": cpu,
         "ram": ram,

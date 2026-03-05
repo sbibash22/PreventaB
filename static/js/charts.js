@@ -37,14 +37,14 @@
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
-    // ✅ destroy old chart instance (prevents lag + stacking)
+    //  destroy old chart instance (prevents lag + stacking)
     if (window._charts[canvasId]) {
       window._charts[canvasId].destroy();
     }
 
     const ctx = canvas.getContext("2d");
 
-    // ✅ compute theme colors INSIDE buildChart so it updates on toggle
+    //  compute theme colors INSIDE buildChart so it updates on toggle
     const isDark = document.documentElement.classList.contains("dark");
     const tickColor = isDark ? "rgba(226,232,240,0.92)" : "rgba(15,23,42,0.95)";
     const gridColor = isDark ? "rgba(148,163,184,0.18)" : "rgba(15,23,42,0.12)";
@@ -142,7 +142,7 @@
     buildChart("diskChart", disk, c.disk);
   })();
 
-  // ✅ redraw instantly when theme toggles (no refresh)
+  //  redraw instantly when theme toggles (no refresh)
   window.addEventListener("preventab:theme-changed", function () {
     const c = currentColors();
     buildChart("cpuChart", cpu, c.cpu);

@@ -23,7 +23,7 @@ def notification_read(request, pk):
         messages.error(request, "You are not allowed to view this notification.")
         return redirect("login")
 
-    # ✅ Mark as read using REAL DB fields (not @property)
+    #  Mark as read using REAL DB fields (not @property)
     updated_fields = []
 
     if hasattr(n, "is_read"):
@@ -48,7 +48,7 @@ def notification_read(request, pk):
     if updated_fields:
         n.save(update_fields=updated_fields)
 
-    # ✅ Correct redirect:
+    #  Correct redirect:
     if request.user.is_admin():
         return redirect("send_alert")
     return redirect("user_dashboard")

@@ -1,0 +1,8 @@
+[
+  "cpu",
+  "ram",
+  "disk",
+  "critical_count_1h",
+  "error_count_1h",
+  "warning_count_1h"
+]

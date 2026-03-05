@@ -1,0 +1,56 @@
+{
+  "cpu": {
+    "high_explanation": "CPU utilization is elevated, indicating heavy processing load.",
+    "actions": [
+      "Check for runaway processes or stuck applications",
+      "Review scheduled tasks for overlapping execution windows",
+      "Consider load balancing or scaling compute resources",
+      "Monitor for cryptomining or unauthorized software"
+    ]
+  },
+  "ram": {
+    "high_explanation": "Memory usage is high, suggesting potential memory pressure or leaks.",
+    "actions": [
+      "Investigate memory-intensive applications for leaks",
+      "Check if virtual memory (swap) is being heavily used",
+      "Consider adding physical RAM or optimizing applications",
+      "Restart long-running services to release accumulated memory"
+    ]
+  },
+  "disk": {
+    "high_explanation": "Disk usage/activity is elevated, which may indicate storage saturation.",
+    "actions": [
+      "Clean up temporary files, logs, and old backups",
+      "Check disk health with SMART diagnostics",
+      "Verify no runaway logging is filling disk space",
+      "Plan storage expansion if consistently above 85%"
+    ]
+  },
+  "critical_count_1h": {
+    "high_explanation": "Multiple critical events detected in recent logs.",
+    "actions": [
+      "Immediately review critical event details in Event Viewer",
+      "Check for hardware failures (disk, memory, power)",
+      "Verify system service health and restart if needed",
+      "Escalate to senior administrator if pattern persists"
+    ]
+  },
+  "error_count_1h": {
+    "high_explanation": "Elevated error events detected, indicating recurring issues.",
+    "actions": [
+      "Review error logs to identify common error codes",
+      "Check application dependencies and configurations",
+      "Update drivers and apply pending patches",
+      "Test network connectivity and DNS resolution"
+    ]
+  },
+  "warning_count_1h": {
+    "high_explanation": "Warning events are above normal, suggesting emerging issues.",
+    "actions": [
+      "Review warning patterns for early degradation signs",
+      "Check resource thresholds that may be triggering warnings",
+      "Proactively address warnings before they become errors",
+      "Document patterns for future baseline comparison"
+    ]
+  }
+}

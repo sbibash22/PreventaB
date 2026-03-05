@@ -1,6 +1,8 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+# ML artifacts (absolute-safe paths)
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -119,5 +121,13 @@ DEFAULT_FROM_EMAIL = os.getenv(
 )
 
 AGENT_INGEST_TOKEN = os.getenv("AGENT_INGEST_TOKEN", "change-me-agent-token")
-ML_MODEL_PATH = os.getenv("ML_MODEL_PATH", "ml_artifacts/model.joblib")
-ML_FEATURES_PATH = os.getenv("ML_FEATURES_PATH", "ml_artifacts/features.json")
+# --- ML artifact paths ---
+ML_ARTIFACT_DIR = os.getenv("ML_ARTIFACT_DIR", os.path.join(BASE_DIR, "ml_artifacts"))
+
+ML_MODEL_PATH = os.getenv("ML_MODEL_PATH", os.path.join(ML_ARTIFACT_DIR, "model.joblib"))
+ML_FEATURES_PATH = os.getenv("ML_FEATURES_PATH", os.path.join(ML_ARTIFACT_DIR, "features.json"))
+ML_METADATA_PATH = os.getenv("ML_METADATA_PATH", os.path.join(ML_ARTIFACT_DIR, "model_metadata.json"))
+ML_ACTION_MAP_PATH = os.getenv("ML_ACTION_MAP_PATH", os.path.join(ML_ARTIFACT_DIR, "action_map.json"))
+
+# NEW: notebook insights used ONLY for dashboard comparison
+ML_KAGGLE_INSIGHTS_PATH = os.getenv("ML_KAGGLE_INSIGHTS_PATH", os.path.join(ML_ARTIFACT_DIR, "kaggle_insights.json"))

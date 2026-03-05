@@ -83,10 +83,10 @@
       </div>
     </div>
 
-    <!-- ✅ safest way to pass JSON to JS -->
+    <!--  safest way to pass JSON to JS -->
     {{ chart_payload|json_script:"dash-chart-data" }}
 
-    <!-- ✅ your own JS that renders charts -->
+    <!--  your own JS that renders charts -->
     <script src="{% static 'js/charts.js' %}"></script>
 
   {% else %}
@@ -94,7 +94,7 @@
   {% endif %}
 </div>
 
-<!-- ✅ Explainable AI report -->
+<!--  Explainable AI report -->
 {% if selected_device and xai_report %}
 <div class="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
   <div class="flex items-start justify-between gap-3 flex-wrap">

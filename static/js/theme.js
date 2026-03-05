@@ -20,7 +20,7 @@
     const isDark = document.documentElement.classList.contains("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
 
-    // ✅ NEW: tell charts to redraw instantly (no refresh)
+    //  NEW: tell charts to redraw instantly (no refresh)
     window.dispatchEvent(new Event("preventab:theme-changed"));
   };
 })();

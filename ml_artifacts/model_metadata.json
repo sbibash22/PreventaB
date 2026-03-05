@@ -1,0 +1,51 @@
+{
+  "project": "PreventaB",
+  "student": "Bibash Shrestha",
+  "student_id": "77466887",
+  "dataset_cloud_handle": "sandhyapeesara/cloud-anomaly-data",
+  "dataset_windows_logs_handle": "mehulkatara/windows-event-log",
+  "selected_model": "HistGradientBoosting",
+  "model_type": "HistGradientBoostingClassifier",
+  "features": [
+    "cpu",
+    "ram",
+    "disk",
+    "critical_count_1h",
+    "error_count_1h",
+    "warning_count_1h"
+  ],
+  "n_features": 6,
+  "training_rows": 222056,
+  "test_rows": 55514,
+  "roc_auc_test": 0.5464,
+  "average_precision_test": 0.0802,
+  "suggested_threshold_max_f1": 0.05,
+  "risk_labels": {
+    "HIGH": ">= 0.7",
+    "MEDIUM": ">= 0.4",
+    "LOW": "< 0.4"
+  },
+  "best_params": {
+    "clf__min_samples_leaf": 20,
+    "clf__max_leaf_nodes": 15,
+    "clf__max_depth": null,
+    "clf__learning_rate": 0.1
+  },
+  "all_model_results": {
+    "LogisticRegression": {
+      "roc_auc": 0.5026,
+      "avg_precision": 0.0648
+    },
+    "RandomForest": {
+      "roc_auc": 0.5454,
+      "avg_precision": 0.0823
+    },
+    "HistGradientBoosting": {
+      "roc_auc": 0.5464,
+      "avg_precision": 0.0802
+    }
+  },
+  "created_utc": "2026-03-05T16:17:51Z",
+  "python_version": "3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]",
+  "scikit_learn_version": "1.0.2"
+}
