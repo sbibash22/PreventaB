@@ -110,5 +110,15 @@
     <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Risk Analytics / AI Insights</span>
   </a>
 
+<!-- Send Reports -->
+<a href="{% url 'send_reports' %}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition
+          {% if '/admin/send-reports' in p %}bg-slate-200 dark:bg-slate-800{% endif %}"
+   :class="(sidebarMini && window.innerWidth>=768) ? 'justify-center' : ''"
+   :title="(sidebarMini && window.innerWidth>=768) ? 'Send Reports' : ''">
+  <span class="text-lg">📑</span>
+  <span x-show="!(sidebarMini && window.innerWidth>=768)" x-transition.opacity>Send Reports</span>
+</a>
+
   {% endwith %}
 </nav>

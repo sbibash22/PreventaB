@@ -1,0 +1,90 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Send Reports{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Send Reports</h1>
+      <p class="text-sm text-gray-500">
+        Send a PDF system report (telemetry + logs + explainable AI) to a selected user for their assigned device.
+      </p>
+    </div>
+
+    <form method="get" class="flex gap-2">
+      <input name="q" value="{{ q }}" placeholder="Search user / email / device..." class="border rounded px-3 py-2 text-sm w-72">
+      <button class="px-4 py-2 rounded bg-gray-900 text-white text-sm hover:bg-black">Search</button>
+    </form>
+  </div>
+
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th class="text-left px-4 py-3">User</th>
+            <th class="text-left px-4 py-3">Email</th>
+            <th class="text-left px-4 py-3">Device</th>
+            <th class="text-left px-4 py-3">OS</th>
+            <th class="text-left px-4 py-3">Last Telemetry</th>
+            <th class="text-left px-4 py-3">Latest Risk</th>
+            <th class="text-left px-4 py-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr class="border-t border-gray-100 dark:border-gray-800">
+            <td class="px-4 py-3">
+              <div class="font-medium">{{ r.user.get_full_name|default:r.user.username }}</div>
+              <div class="text-xs text-gray-500">Role: {{ r.user.role }}</div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="font-mono text-xs">{{ r.user.email|default:"—" }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <div class="font-medium">{{ r.device.name }}</div>
+              <div class="text-xs text-gray-500">IP: {{ r.device.ip_address|default:"—" }}</div>
+            </td>
+            <td class="px-4 py-3">{{ r.device.os_type|default:"—" }}</td>
+            <td class="px-4 py-3">
+              {% if r.device.last_sample_time %}
+                <span class="font-mono text-xs">{{ r.device.last_sample_time }}</span>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">
+              {% if r.device.last_risk_score %}
+                <div class="font-mono text-xs">score={{ r.device.last_risk_score|floatformat:3 }}</div>
+                <div class="text-xs text-gray-500">level={{ r.device.last_risk_level|default:"—" }}</div>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">
+              <form method="post" action="{% url 'send_report' r.user.id r.device.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="days" value="7">
+                <button class="px-3 py-2 rounded bg-indigo-600 text-white text-xs hover:bg-indigo-700">
+                  Send PDF
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="px-4 py-10 text-center text-gray-500">
+              No assigned user/device pairs found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-4 text-xs text-gray-500">
+    Tip: email delivery depends on your SMTP settings in <code>.env</code> (EMAIL_HOST/EMAIL_HOST_USER/EMAIL_HOST_PASSWORD).
+  </div>
+</div>
+{% endblock %}
