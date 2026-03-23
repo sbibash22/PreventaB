@@ -1,10 +1,12 @@
-import secrets, string
+import secrets
+import string
+
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
-from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 
 def generate_password(length: int = 12) -> str:
@@ -14,6 +16,17 @@ def generate_password(length: int = 12) -> str:
 
 def _bcc_admin():
     return [settings.EMAIL_HOST_USER] if getattr(settings, "EMAIL_HOST_USER", "") else []
+
+
+def _absolute_link(request, path: str) -> str:
+    """
+    Always prefer PUBLIC_BASE_URL for email links so they work outside local IP.
+    Falls back to request.build_absolute_uri if PUBLIC_BASE_URL is not set.
+    """
+    public_base_url = getattr(settings, "PUBLIC_BASE_URL", "").strip().rstrip("/")
+    if public_base_url:
+        return f"{public_base_url}{path}"
+    return request.build_absolute_uri(path)
 
 
 def send_account_setup_email(request, user) -> int:
@@ -29,7 +42,7 @@ def send_account_setup_email(request, user) -> int:
     token = default_token_generator.make_token(user)
 
     path = reverse("account_set_password", kwargs={"uidb64": uid, "token": token})
-    setup_link = request.build_absolute_uri(path)
+    setup_link = _absolute_link(request, path)
 
     subject = "Set up your PreventaB account"
     text_body = (
@@ -73,7 +86,7 @@ def send_password_reset_email(request, user) -> int:
     token = default_token_generator.make_token(user)
 
     path = reverse("password_reset_confirm", kwargs={"uidb64": uid, "token": token})
-    reset_link = request.build_absolute_uri(path)
+    reset_link = _absolute_link(request, path)
 
     subject = "Reset your PreventaB password"
     text_body = (

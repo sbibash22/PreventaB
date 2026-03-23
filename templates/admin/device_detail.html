@@ -1,54 +1,234 @@
 {% extends "admin/base_admin.html" %}
+{% load tz %}
+
 {% block content %}
-<div class="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900 border">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div>
-      <div class="text-2xl font-bold">{{ device.name }}</div>
-      <div class="opacity-70">{{ device.ip_address }} • {{ device.os_type }}</div>
+<div class="w-full min-w-0">
 
-      <div class="mt-3 text-sm">
-        <div><b>Monitoring:</b> {{ device.monitoring_enabled }}</div>
-        <div><b>Risk Profile:</b> {{ device.risk_profile }}</div>
-        <div class="mt-2"><b>API Key:</b> <span class="font-mono break-all">{{ device.api_key }}</span></div>
-      </div>
-    </div>
+  <!-- Top device summary -->
+  <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-5 lg:p-6">
+    <div class="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5">
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div class="min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 break-words">
+              {{ device.name }}
+            </h1>
+            <p class="mt-1 text-sm sm:text-base text-slate-500 dark:text-slate-400 break-words">
+              {{ device.ip_address|default:"—" }} • {{ device.os_type|default:"—" }}
+            </p>
+          </div>
 
-    <div class="flex gap-2">
-      <a class="px-3 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:opacity-90 transition"
-         href="{% url 'device_edit' device.pk %}">Edit</a>
-      <a class="px-3 py-2 rounded-lg bg-red-600 text-white hover:opacity-90 transition"
-         href="{% url 'device_delete' device.pk %}">Delete</a>
-    </div>
-  </div>
-</div>
-
-<div class="mt-6 grid lg:grid-cols-2 gap-6">
-  <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border">
-    <h2 class="font-semibold mb-2">Latest Telemetry</h2>
-    {% for s in samples %}
-      <div class="border-b border-slate-200 dark:border-slate-800 py-2 text-sm">
-        <div class="flex flex-wrap sm:flex-nowrap justify-between gap-2">
-          <span class="opacity-80">{{ s.timestamp }}</span>
-          <span class="font-bold">{{ s.risk_level }} ({{ s.risk_score|floatformat:2 }})</span>
+          {% if device.online_now %}
+            <span class="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300">
+              Online
+            </span>
+          {% else %}
+            <span class="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              Offline
+            </span>
+          {% endif %}
         </div>
-        <div class="opacity-80">CPU {{ s.cpu }}% • RAM {{ s.ram }}% • Disk {{ s.disk }}%</div>
+
+        <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+          <div class="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Monitoring
+            </div>
+            <div class="text-sm font-medium text-slate-900 dark:text-slate-100">
+              {{ device.monitoring_enabled }}
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Risk Profile
+            </div>
+            <div class="text-sm font-medium text-slate-900 dark:text-slate-100">
+              {{ device.risk_profile|default:"—" }}
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Last Seen
+            </div>
+            {% if device.last_seen %}
+              <div class="text-sm font-medium text-slate-900 dark:text-slate-100">
+                {{ device.last_seen|localtime|date:"M d, Y" }}
+              </div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                {{ device.last_seen|localtime|date:"h:i A" }}
+              </div>
+            {% else %}
+              <div class="text-sm text-slate-500 dark:text-slate-400">
+                No telemetry yet
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Status Window
+            </div>
+            <div class="text-sm font-medium text-slate-900 dark:text-slate-100">
+              {{ online_window_seconds }} sec
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 sm:p-4">
+          <div class="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+            API Key
+          </div>
+          <div class="font-mono text-xs sm:text-sm text-slate-900 dark:text-slate-100 break-all">
+            {{ device.api_key }}
+          </div>
+        </div>
       </div>
-    {% empty %}
-      <div class="opacity-70">No telemetry yet. Start the agent.</div>
-    {% endfor %}
+
+      <div class="flex flex-col sm:flex-row xl:flex-col gap-2 xl:w-36">
+        <a
+          class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:opacity-90 transition text-sm font-medium"
+          href="{% url 'device_edit' device.pk %}"
+        >
+          Edit
+        </a>
+        <a
+          class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-red-600 text-white hover:opacity-90 transition text-sm font-medium"
+          href="{% url 'device_delete' device.pk %}"
+        >
+          Delete
+        </a>
+      </div>
+    </div>
   </div>
 
-  <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border">
-    <h2 class="font-semibold mb-2">Latest Logs</h2>
-    {% for l in logs %}
-      <div class="border-b border-slate-200 dark:border-slate-800 py-2 text-sm">
-        <span class="font-bold">[{{ l.level }}]</span>
-        <span class="opacity-80">{{ l.source }}</span> —
-        {{ l.message|truncatechars:140 }}
+  <!-- Telemetry + Logs -->
+  <div class="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
+
+    <!-- Latest Telemetry -->
+    <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-5">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Latest Telemetry
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Most recent telemetry samples for this device
+          </p>
+        </div>
       </div>
-    {% empty %}
-      <div class="opacity-70">No logs yet.</div>
-    {% endfor %}
+
+      <div class="mt-4 space-y-3">
+        {% for s in samples %}
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 sm:p-4">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="text-sm sm:text-base font-medium text-slate-900 dark:text-slate-100">
+                  {% if s.timestamp %}
+                    {{ s.timestamp|localtime|date:"M d, Y · h:i A" }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                  {% if s.risk_level == 'HIGH' or s.risk_level == 'CRITICAL' %}
+                    bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300
+                  {% elif s.risk_level == 'MEDIUM' %}
+                    bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300
+                  {% else %}
+                    bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300
+                  {% endif %}
+                ">
+                  {{ s.risk_level }}
+                </span>
+
+                <span class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {{ s.risk_score|floatformat:2 }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 text-sm">
+                <span class="text-slate-500 dark:text-slate-400">CPU:</span>
+                <span class="font-medium text-slate-900 dark:text-slate-100">{{ s.cpu|floatformat:1 }}%</span>
+              </div>
+              <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 text-sm">
+                <span class="text-slate-500 dark:text-slate-400">RAM:</span>
+                <span class="font-medium text-slate-900 dark:text-slate-100">{{ s.ram|floatformat:1 }}%</span>
+              </div>
+              <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 text-sm">
+                <span class="text-slate-500 dark:text-slate-400">Disk:</span>
+                <span class="font-medium text-slate-900 dark:text-slate-100">{{ s.disk|floatformat:1 }}%</span>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-sm text-slate-500 dark:text-slate-400 text-center">
+            No telemetry yet. Start the agent.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Latest Logs -->
+    <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-5">
+      <div>
+        <h2 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">
+          Latest Logs
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Most recent system logs collected for this device
+        </p>
+      </div>
+
+      <div class="mt-4 space-y-3">
+        {% for l in logs %}
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 sm:p-4">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold
+                    {% if l.level == 'CRITICAL' or l.level == 'ERROR' %}
+                      bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300
+                    {% elif l.level == 'WARNING' %}
+                      bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300
+                    {% else %}
+                      bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300
+                    {% endif %}
+                  ">
+                    {{ l.level }}
+                  </span>
+
+                  {% if l.timestamp %}
+                    <span class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                      {{ l.timestamp|localtime|date:"M d, Y · h:i A" }}
+                    </span>
+                  {% endif %}
+                </div>
+
+                <div class="mt-2 text-sm text-slate-500 dark:text-slate-400 break-words">
+                  Source: {{ l.source|default:"—" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 text-sm text-slate-700 dark:text-slate-300 break-words whitespace-pre-wrap leading-6">
+              {{ l.message|truncatechars:200 }}
+            </div>
+          </div>
+        {% empty %}
+          <div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-sm text-slate-500 dark:text-slate-400 text-center">
+            No logs yet.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}
