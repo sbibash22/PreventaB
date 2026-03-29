@@ -16,12 +16,15 @@ def env_bool(key: str, default: str = "0") -> bool:
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "172.22.16.177",
-    "zmknddxp-8000.inc1.devtunnels.ms",
-]
+
+allowed_hosts_env = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
+ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(",") if host.strip()]
+
+csrf_origins_env = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins_env.split(",") if origin.strip()]
+
+if env_bool("DJANGO_TRUST_X_FORWARDED_PROTO", "0"):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 PUBLIC_BASE_URL = os.getenv(
     "PUBLIC_BASE_URL",
