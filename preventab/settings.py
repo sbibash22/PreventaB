@@ -14,6 +14,7 @@ load_dotenv(BASE_DIR / ".env", override=True)
 def env_bool(key: str, default: str = "0") -> bool:
     return os.getenv(key, default).strip().lower() in ("1", "true", "yes", "on")
 
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
 
@@ -28,12 +29,8 @@ if env_bool("DJANGO_TRUST_X_FORWARDED_PROTO", "0"):
 
 PUBLIC_BASE_URL = os.getenv(
     "PUBLIC_BASE_URL",
-    "https://zmknddxp-8000.inc1.devtunnels.ms"
+    "http://127.0.0.1:8000"
 ).rstrip("/")
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://zmknddxp-8000.inc1.devtunnels.ms",
-]
 
 DEVICE_ONLINE_WINDOW_SECONDS = 10
 
