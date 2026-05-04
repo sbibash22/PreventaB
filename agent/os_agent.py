@@ -5,11 +5,13 @@ Sends CPU/RAM/Disk + recent OS logs to your Django ingest endpoint:
 POST {SERVER_URL}/telemetry/agent/ingest/
 
 Env vars:
-- SERVER_URL        e.g. http://192.168.1.10:8000
-- DEVICE_API_KEY    (copy from Device Overview page in admin UI)
+- SERVER_URL         e.g. http://192.168.1.10:8000
+- DEVICE_API_KEY     (copy from Device Overview page in admin UI)
 - AGENT_INGEST_TOKEN (must match Django settings.AGENT_INGEST_TOKEN)
-- INTERVAL_SECONDS  default 30
-- MAX_EVENTS        default 30
+- INTERVAL_SECONDS   default 30
+- MAX_EVENTS         default 30
+- REQUEST_TIMEOUT_SECONDS default 15
+- VERIFY_TLS         1=true, 0=false
 """
 
 import datetime as dt
@@ -19,10 +21,16 @@ import platform
 import shutil
 import subprocess
 import time
+from pathlib import Path
 from typing import Any, Dict, List
 
 import psutil
 import requests
+from dotenv import load_dotenv
+
+# Load .env from the same folder as this script
+ENV_PATH = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=ENV_PATH)
 
 SERVER_URL = os.getenv("SERVER_URL", "http://127.0.0.1:8000").rstrip("/")
 DEVICE_API_KEY = os.getenv("DEVICE_API_KEY", "").strip()
@@ -30,6 +38,8 @@ INGEST_TOKEN = os.getenv("AGENT_INGEST_TOKEN", "change-me-agent-token").strip()
 
 INTERVAL_SECONDS = int(os.getenv("INTERVAL_SECONDS", "30"))
 MAX_EVENTS = int(os.getenv("MAX_EVENTS", "30"))
+REQUEST_TIMEOUT_SECONDS = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "15"))
+VERIFY_TLS = os.getenv("VERIFY_TLS", "1").strip() not in {"0", "false", "False", "no", "NO"}
 
 
 def _now_iso() -> str:
@@ -40,7 +50,6 @@ def _read_windows(max_events: int) -> List[Dict[str, Any]]:
     if platform.system().lower() != "windows":
         return []
 
-    # Try pywin32
     try:
         import win32evtlog
         import win32evtlogutil
@@ -76,7 +85,6 @@ def _read_windows(max_events: int) -> List[Dict[str, Any]]:
             if out:
                 return out
 
-    # PowerShell fallback
     ps = (
         f"$e = Get-WinEvent -LogName 'System' -MaxEvents {max_events} | "
         "Select-Object TimeCreated, LevelDisplayName, ProviderName, Id, Message; "
@@ -125,6 +133,7 @@ def _read_windows(max_events: int) -> List[Dict[str, Any]]:
 def _read_linux(max_events: int) -> List[Dict[str, Any]]:
     if platform.system().lower() != "linux":
         return []
+
     if shutil.which("journalctl"):
         cmd = ["journalctl", "--since", "1 hour ago", "-n", str(max_events), "-o", "json"]
         try:
@@ -141,10 +150,12 @@ def _read_linux(max_events: int) -> List[Dict[str, Any]]:
                 d = json.loads(line)
             except Exception:
                 continue
+
             try:
                 pr = int(d.get("PRIORITY", 6))
             except Exception:
                 pr = 6
+
             if pr <= 2:
                 lvl = "CRITICAL"
             elif pr == 3:
@@ -153,12 +164,20 @@ def _read_linux(max_events: int) -> List[Dict[str, Any]]:
                 lvl = "WARNING"
             else:
                 lvl = "INFO"
+
             msg = d.get("MESSAGE") or ""
             src = d.get("SYSLOG_IDENTIFIER") or d.get("_COMM") or d.get("_SYSTEMD_UNIT") or ""
-            events.append({"timestamp": _now_iso(), "level": lvl, "source": str(src)[:120], "event_id": "", "message": str(msg)[:2000]})
+            events.append(
+                {
+                    "timestamp": _now_iso(),
+                    "level": lvl,
+                    "source": str(src)[:120],
+                    "event_id": "",
+                    "message": str(msg)[:2000],
+                }
+            )
         return events[:max_events]
 
-    # syslog fallback
     for path in ["/var/log/syslog", "/var/log/messages"]:
         if os.path.exists(path):
             try:
@@ -166,6 +185,7 @@ def _read_linux(max_events: int) -> List[Dict[str, Any]]:
                     lines = f.readlines()[-max_events:]
             except Exception:
                 return []
+
             events = []
             for s in lines:
                 s = s.strip()
@@ -180,7 +200,16 @@ def _read_linux(max_events: int) -> List[Dict[str, Any]]:
                     lvl = "WARNING"
                 else:
                     lvl = "INFO"
-                events.append({"timestamp": _now_iso(), "level": lvl, "source": "syslog", "event_id": "", "message": s[:2000]})
+
+                events.append(
+                    {
+                        "timestamp": _now_iso(),
+                        "level": lvl,
+                        "source": "syslog",
+                        "event_id": "",
+                        "message": s[:2000],
+                    }
+                )
             return events
     return []
 
@@ -188,8 +217,10 @@ def _read_linux(max_events: int) -> List[Dict[str, Any]]:
 def _read_macos(max_events: int) -> List[Dict[str, Any]]:
     if platform.system().lower() != "darwin":
         return []
+
     if not shutil.which("log"):
         return []
+
     predicate = (
         '(eventMessage CONTAINS[c] "error") OR '
         '(eventMessage CONTAINS[c] "warning") OR '
@@ -197,10 +228,12 @@ def _read_macos(max_events: int) -> List[Dict[str, Any]]:
         '(eventMessage CONTAINS[c] "fault")'
     )
     cmd = ["log", "show", "--last", "1h", "--style", "syslog", "--predicate", predicate]
+
     try:
         out = subprocess.check_output(cmd, text=True, encoding="utf-8", errors="ignore")
     except Exception:
         return []
+
     lines = [l.strip() for l in out.splitlines() if l.strip()][-max_events:]
     events = []
     for s in lines:
@@ -213,7 +246,16 @@ def _read_macos(max_events: int) -> List[Dict[str, Any]]:
             lvl = "WARNING"
         else:
             lvl = "INFO"
-        events.append({"timestamp": _now_iso(), "level": lvl, "source": "macos-log", "event_id": "", "message": s[:2000]})
+
+        events.append(
+            {
+                "timestamp": _now_iso(),
+                "level": lvl,
+                "source": "macos-log",
+                "event_id": "",
+                "message": s[:2000],
+            }
+        )
     return events
 
 
@@ -231,11 +273,13 @@ def read_logs(max_events: int) -> List[Dict[str, Any]]:
 def collect_metrics():
     cpu = float(psutil.cpu_percent(interval=0.4))
     ram = float(psutil.virtual_memory().percent)
+
     if platform.system().lower() == "windows":
         drive = os.getenv("SystemDrive", "C:") + "\\"
         disk = float(psutil.disk_usage(drive).percent)
     else:
         disk = float(psutil.disk_usage("/").percent)
+
     return cpu, ram, disk
 
 
@@ -243,11 +287,18 @@ def main():
     if not DEVICE_API_KEY:
         raise SystemExit("DEVICE_API_KEY is required (copy from Device Overview page).")
 
+    if not SERVER_URL:
+        raise SystemExit("SERVER_URL is required.")
+    if not INGEST_TOKEN:
+        raise SystemExit("AGENT_INGEST_TOKEN is required.")
+
     url = f"{SERVER_URL}/telemetry/agent/ingest/"
     headers = {"X-INGEST-TOKEN": INGEST_TOKEN}
 
+    print("Loaded .env from:", ENV_PATH)
     print("Sending to:", url)
     print("Interval:", INTERVAL_SECONDS, "seconds | Max events:", MAX_EVENTS)
+    print("TLS verify:", VERIFY_TLS)
     print("OS:", platform.system())
 
     while True:
@@ -263,7 +314,13 @@ def main():
         }
 
         try:
-            r = requests.post(url, json=payload, headers=headers, timeout=15)
+            r = requests.post(
+                url,
+                json=payload,
+                headers=headers,
+                timeout=REQUEST_TIMEOUT_SECONDS,
+                verify=VERIFY_TLS,
+            )
             print("POST", r.status_code, r.text[:200])
         except Exception as e:
             print("POST failed:", e)

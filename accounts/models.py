@@ -35,6 +35,7 @@ class UserPreference(models.Model):
 
     # UX
     timezone = models.CharField(max_length=64, default="UTC")
+    date_format = models.CharField(max_length=16, default="DMY")
     default_device = models.ForeignKey(Device, null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
     compact_sidebar = models.BooleanField(default=False)
 
