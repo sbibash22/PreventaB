@@ -6,7 +6,7 @@
 
 **Student:** Bibash Shrestha  
 **Course:** BSc (Hons) Computing  
-**Module:** Production Project (CRN 10810)  
+**Module:** Production Project (CRN 14806)  
 **Institution:** The British College, Kathmandu
 
 *A Django + PostgreSQL web application that collects device telemetry and OS logs, predicts system failure risk, explains the prediction, generates alerts, and supports cross-device testing with QR-based access.*
